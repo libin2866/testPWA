@@ -28,31 +28,34 @@
         margin: 0;
         padding: 0;
     }
+    .success {
+        color: lightgreen;
+    }
     .error{
         color: red;
     }
 	</style>
 </head>
 <body>
-<p><img src="./static/time.jpg" alt="Demo pic" width="460" height="280"></p>
 <h2>SW Test</h2>
+<p><img src="./static/time.jpg" alt="Demo pic" width="460" height="280"></p>
+
 <ul>
+    <li><p id="notiInfo">This place will show Info.</p></li>
+    <li></li>
+    <li></li>
     <li>当前浏览器兼容性：<span id="isSupport"></span></li>
     <li><p>SW注册情况：</p><span id="isSuccess"></span></li>
     <li>当前注册状态：<span id="state">null</span></li>
     <li>service worker状态：<span id="swState">null</span></li>
+    <li><p>通知:&nbsp;<button id="openNoti">开启通知</button>&nbsp;<button id="sendNoti">发送消息</button></p></li>
+    <li><p>反注册:&nbsp;<button id="deRegister">删除SW</button></p></li>
 </ul>
-
-<div>
-    <h2>Web Push Test</h2>
-    <button id="webPush">Click to Push</button>
-</div>
-
 <script src="./static/jquery.min.js"></script>
 <script src="./push.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
-	$('#isSupport').text('支持');
+	$('#isSupport').addClass('success').text('支持');
 
     /*
      *--------------------TODO---------------------------
@@ -80,17 +83,16 @@ if ('serviceWorker' in navigator) {
         if (serviceWorker) {
             $('#swState').text(serviceWorker.state);
             serviceWorker.addEventListener('statechange', function (e) {
-            	$('#swState').append('&emsp;状态变化为' + e.target.state);
+            	$('#swState').append('<br/>' +new Date() + ':状态变化为' + e.target.state);
             });
         }
-    }).catch (function (error) {
+    }).then(() => sendMsg('hello sw!')).catch (function (error) {
         console.error(error);
         $('#isSuccess').addClass('error').text(error || '注册没有成功');
     });
 } else {
 	$('#isSupport').addClass('error').text('不支持');
 }
-
 
 
 function sendMsg(msg) {
@@ -101,13 +103,12 @@ function sendMsg(msg) {
     controller.postMessage(msg, []);
 }
 
-// 在 serviceWorker 注册成功后，页面上即可通过 navigator.serviceWorker.controller 发送消息给它
-navigator.serviceWorker
-    .register('/test/sw.js', {scope: '/test/'})
-    .then(registration => console.log('ServiceWorker 注册成功！作用域为: ', registration.scope))
-    .then(() => sendMsg('hello sw!'))
-    .catch(err => console.log('ServiceWorker 注册失败: ', err));
+function onMessage(e) {
+    console.log(e, e.data);
+    $('#notiInfo').text(e.data);      
+}
 
+window.addEventListener('message', onMessage, false);
 
 window.addEventListener('beforeinstallprompt', function(event) {
     // 禁止添加到主屏幕
@@ -120,11 +121,52 @@ window.addEventListener('beforeinstallprompt', function(event) {
         console.log(choiceResult.outcome); // 为 dismissed 或 accepted
         if(choiceResult.outcome === 'dismissed') {
             console.log('User cancelled home screen install');
+            $('#notiInfo').text('User cancelled home screen install');            
         } else {
             console.log('User added to home screen');
+            $('#notiInfo').text('Page added to home screen');
         }
     });
 });
+
+$('#deRegister').on('click', function(e) {
+    console.log('to off');
+    if(window.navigator && navigator.serviceWorker) {
+       try{ 
+            navigator.serviceWorker.getRegistrations()
+            .then(function(registrations) {
+                for(let registration of registrations) {
+                registration.unregister();
+                }
+                $('#notiInfo').text('Service Workers are all unregistered.');                        
+            });
+        }
+        catch (e){
+            $('#notiInfo').text(e);                        
+        }
+    }
+})
+
+$('#openNoti').on('click', function(e) {
+     console.log('to notify');
+     requestPermission();
+})
+
+$('#sendNoti').on('click', function (e) {
+    console.log('to send msg');
+    if (window.Notification) {
+        console.log(Notification.permission);
+       if(Notification.permission !== 'granted'){
+            Notification.requestPermission();
+       }
+        new Notification("Test Notification：", {
+            body: 'Notification body',
+            icon: 'https://avatars2.githubusercontent.com/u/1854353?s=96&v=4'
+        });
+    } else {
+        $('#notiInfo').text('Web Notification Not Supported');   
+    }
+})
 
 </script>
 </body>

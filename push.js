@@ -1,15 +1,20 @@
 // 向用户申请通知权限，用户可以选择允许或禁止
 // Notification.requestPermission 只有在页面上才可执行，Service Worker 内部不可申请权限
-Notification.requestPermission().then(grant => {
-    console.log(grant); // 如果获得权限，会得到 granted
-    if (Notification.permission === 'denied') {
-        // 用户拒绝了通知权限
-        console.log('Permission for Notifications was denied');
-    }
-    else {
-        console.log('Permission for Notifications was allowed');
-    }
-});
+function requestPermission() {
+    Notification.requestPermission().then(grant => {
+        console.log(grant); // 如果获得权限，会得到 granted
+        if (Notification.permission === 'denied') {
+            // 用户拒绝了通知权限
+            console.log('Permission for Notifications was denied');
+            $('#notiInfo').text('Permission for Notifications was denied');                                    
+        }
+        else {
+            console.log('Permission for Notifications was allowed');
+            $('#notiInfo').text('Permission for Notifications was allowed');                                                
+        }
+    });
+}
+
 
 let reg;
 const applicationServerKey = 'xxx'; // 应用服务器的公钥（base64 网址安全编码）

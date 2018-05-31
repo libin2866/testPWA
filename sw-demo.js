@@ -1,4 +1,4 @@
-var CACHE_CACHE_VERSION = 'ver1.0';
+var CACHE_VERSION = 'ver1.0';
 
 // 缓存
 self.addEventListener('install', function(event) {
@@ -62,7 +62,8 @@ self.addEventListener('fetch', function(event) {
 self.addEventListener('push', function(event) {
     // 读取 event.data 获取传递过来的数据，根据该数据做进一步的逻辑处理
     const obj = event.data.json();
-
+    console.log('push event got');
+    console.log(event);
     // 逻辑处理示例
     if(Notification.permission === 'granted' && obj.action === 'subscribe') {
         self.registration.showNotification("Hi Notification：", {
@@ -71,6 +72,16 @@ self.addEventListener('push', function(event) {
             tag: 'push'
         });
     }
+});
+
+self.addEventListener('notificationclick', event => {  
+  // Do something with the event  
+  console.log('clicked notification');
+  event.notification.close();  
+});
+self.addEventListener('notificationclose', event => {  
+  // Do something with the event  
+  console.log('Now the notification is closed');
 });
 
 self.addEventListener('message', function(ev) {

@@ -3,7 +3,7 @@
   "name": "TEST_PWA",
   "short_name": "PWA",
   "start_url": "/?from=homescreen",
-  "display": "standalone", // fullscreen
+  "display": "standalone",
   "description": "This is description.",
   "dir": "rtl",
   "lang": "cn",
@@ -28,9 +28,9 @@
     "platform": "web"
   }, {
     "platform": "play",
-    "url": ""// Google Play Store App url
+    "url": ""
   }, {
     "platform": "itunes",
-    "url": "" // iTunes Store App url
+    "url": ""
   }]
 }
