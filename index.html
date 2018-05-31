@@ -52,7 +52,7 @@
     <li><p>反注册:&nbsp;<button id="deRegister">删除SW</button></p></li>
 </ul>
 <script src="./static/jquery.min.js"></script>
-<script src="./push.js"></script>
+<script src="./push.js" type="text/javascript"></script>
 <script>
 if ('serviceWorker' in navigator) {
 	$('#isSupport').addClass('success').text('支持');
@@ -68,7 +68,7 @@ if ('serviceWorker' in navigator) {
 	navigator.serviceWorker.register('./sw-demo.js', {
 		scope: './'
 	}).then(function (registration) {
-		$('#isSuccess').removeClass('error').text('Service Worker已注册');
+		$('#isSuccess').removeClass('error').addClass('success').text('Service Worker已注册');
         var serviceWorker;
         if (registration.installing) {
             serviceWorker = registration.installing;
@@ -83,7 +83,8 @@ if ('serviceWorker' in navigator) {
         if (serviceWorker) {
             $('#swState').text(serviceWorker.state);
             serviceWorker.addEventListener('statechange', function (e) {
-            	$('#swState').append('<br/>' +new Date() + ':状态变化为' + e.target.state);
+                var time = new Date();
+            	$('#swState').append('<br/>' + time + ':状态变化为' + e.target.state);
             });
         }
     }).then(() => sendMsg('hello sw!')).catch (function (error) {
