@@ -49,11 +49,10 @@ self.addEventListener('fetch', function(event) {
         // 如果为离线状态
         // offlineActions();
       }
-
-      caches.open(CACHE_VERSION).then(function(cache) {
-        cache.put(event.request, response);
-      });
-      return response.clone();
+      // caches.open(CACHE_VERSION).then(function(cache) {
+      //   cache.put(event.request, response);
+      // });
+      // return response.clone();
    }).catch(function() {
     return caches.match('./static/time.jpg');
   }));
